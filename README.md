@@ -1,2 +1,3 @@
 # Rebuild
-MHacks8 project
+
+This is my MHacks8 Project. An open source architecural planning app. 
