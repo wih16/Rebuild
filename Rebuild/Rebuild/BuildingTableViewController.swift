@@ -12,38 +12,46 @@ class BuildingTableViewController: UITableViewController {
 
     //MARK: Properties
     var buildingsArray = [Building]()
+    var loadArray = [Building]()
+    var temp = [Building]()
     
+    @IBOutlet weak var menuButton: UIBarButtonItem!
     
     override func viewDidLoad() {
+        buildingsArray = [Building]()
+        let nav = self.navigationController?.navigationBar
+        nav?.barTintColor = UIColor(red: 204/255.0, green: 204/255.0, blue: 204/255.0, alpha: 1)
+        nav?.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 255/255.0, green: 99/255.0, blue: 71/255.0, alpha: 1)]
+        
+        addBuildings()
+        
+        if revealViewController() != nil{
+            menuButton.target = self.revealViewController()
+            
+            menuButton.action = #selector(SWRevealViewController().revealToggle(_:))
+            
+            view.addGestureRecognizer(self.revealViewController().panGestureRecognizer())
+        }
         super.viewDidLoad()
-
-        // Uncomment the following line to preserve selection between presentations
-        // self.clearsSelectionOnViewWillAppear = false
-
-        // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-        // self.navigationItem.rightBarButtonItem = self.editButtonItem()
-        
-        loadSampleBuildings()
-        
     }
     
-    func loadSampleBuildings(){
-        let photo1 = UIImage(named: "Temple3rd")!
-        let building1 = Building(name: "Temple and 3rd", image: photo1)!
+    func addBuildings(){
+        let photo1 = UIImage(imageLiteralResourceName: "HenryCass")
+        var building1 = Building(name: "Henry and Cass", image: photo1)!
         
-        let photo2 = UIImage(named: "RiverFisher")!
+        let photo2 = UIImage(imageLiteralResourceName: "RiverFisher")
         let building2 = Building(name: "Grand River and Fisher FWY", image: photo2)!
-        
-        let photo3 = UIImage(named: "HenryCass")!
-        let building3 = Building(name: "Henry and Cass", image: photo3)!
-        
         buildingsArray.append(building1)
         buildingsArray.append(building2)
-        buildingsArray.append(building3)
+        
+        var count = 0
+        
+        loadArray = loadBuildingsTotal()
+        for b in loadArray {
+            buildingsArray.append(b)
+            count += 1
+        }
     }
-    
-    
-    
     
 
     override func didReceiveMemoryWarning() {
@@ -118,5 +126,35 @@ class BuildingTableViewController: UITableViewController {
         // Pass the selected object to the new view controller.
     }
     */
+    
+    //MARK: NSCoding
+    
+    func saveBuildings(array: [Building]){
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(array, toFile: Building.ArchiveURL.path)
+        
+        if !isSuccessfulSave {
+            print("Failed")
+        }
+    }
+    func saveBuildingsTotal(array: [Building]){
+        let isSuccessfulSave = NSKeyedArchiver.archiveRootObject(array, toFile: Building.ArchiveURLTotal.path)
+        
+        if !isSuccessfulSave {
+            print("Failed")
+        }
+    }
+    
+    func loadBuildings() -> [Building]{
+        return NSKeyedUnarchiver.unarchiveObject(withFile: Building.ArchiveURL.path) as! [Building]
+    }
+    func loadBuildingsTotal() -> [Building]{
+        if NSKeyedUnarchiver.unarchiveObject(withFile: Building.ArchiveURLTotal.path) as? [Building] != nil{
+            return (NSKeyedUnarchiver.unarchiveObject(withFile: Building.ArchiveURLTotal.path) as! [Building])
+        }
+        let array = [Building]()
+        
+        return array
+    }
+    
 
 }

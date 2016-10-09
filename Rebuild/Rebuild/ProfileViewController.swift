@@ -1,5 +1,5 @@
 //
-//  LoginViewController.swift
+//  ProfileViewController.swift
 //  Rebuild
 //
 //  Created by William Hinard on 10/8/16.
@@ -8,17 +8,25 @@
 
 import UIKit
 
-class LoginViewController: UIViewController {
+class ProfileViewController: UIViewController {
 
-    @IBOutlet weak var Username: UITextField!
-    @IBOutlet weak var Password: UITextField!
-    
+    //MARK: Attributes
+    @IBOutlet weak var menuButton: UIBarButtonItem!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         let nav = self.navigationController?.navigationBar
         nav?.barTintColor = UIColor(red: 204/255.0, green: 204/255.0, blue: 204/255.0, alpha: 1)
         nav?.titleTextAttributes = [NSForegroundColorAttributeName: UIColor(red: 255/255.0, green: 99/255.0, blue: 71/255.0, alpha: 1)]
+        
+        if revealViewController() != nil{
+            menuButton.target = self.revealViewController()
+            
+            menuButton.action = #selector(SWRevealViewController().revealToggle(_:))
+            
+            view.addGestureRecognizer(self.revealViewController().panGestureRecognizer())
+        }
     }
 
     override func didReceiveMemoryWarning() {
@@ -26,24 +34,6 @@ class LoginViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    
-    //MARK: Action
-    @IBAction func loginButton(_ sender: UIButton) {
-        let username = Username.text!
-        let password = Password.text!
-        
-        let usernameStored = UserDefaults.standard.string(forKey: "user")
-        let passwordStored = UserDefaults.standard.string(forKey: "pass")
-        
-        if(username == usernameStored){
-            if(password == passwordStored){
-                //User is logged in 
-                UserDefaults.standard.set(true, forKey: "loggedIn")
-                self.dismiss(animated: true, completion: nil)
-            }
-        }
-        
-    }
 
     /*
     // MARK: - Navigation
